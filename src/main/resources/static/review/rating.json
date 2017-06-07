@@ -1,0 +1,26 @@
+{
+  "bucketCount": 5,
+  "rating": 75,
+  "reviewCounts": [
+    {
+      "bucket": 1,
+      "count": 2
+    },
+    {
+      "bucket": 2,
+      "count": 5
+    },
+    {
+      "bucket": 3,
+      "count": 10
+    },
+    {
+      "bucket": 4,
+      "count": 35
+    },
+    {
+      "bucket": 5,
+      "count": 3
+    }
+  ]
+}

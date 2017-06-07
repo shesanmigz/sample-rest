@@ -1,0 +1,24 @@
+{
+  "billSummary":{
+    "subtotal":90,
+    "shipping":8,
+    "net":98,
+    "vat":2,
+    "total":100
+  },
+  "bills":[
+    {
+      "subtotal":90,
+      "shipping":8,
+      "net":98,
+      "vat":2,
+      "total":100
+    }
+  ],
+  "items":[
+    {
+      "offerId":"1",
+      "price":20
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+[
+  {
+    "component": "slider",
+    "value": {
+      "items": [
+        {"html": "slider"}
+      ]
+    }
+  },
+  {
+    "component": "grid",
+    "value": {
+      "fixed": {
+        "html": "fixed"
+      },
+      "fixedPosition": "left",
+      "items": [
+        {"html": "grid"}
+      ]
+    }
+  },
+  {
+    "title": {
+      "html": "title"
+    },
+    "component": "carousel",
+    "value": {
+      "items": [
+        {"html": "carousel"}
+      ]
+    }
+  }
+]

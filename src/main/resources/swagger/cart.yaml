@@ -1,0 +1,500 @@
+swagger: '2.0'
+
+info:
+  version: "1.0.0"
+  title: Cart API
+  description: Provides services such as shopping cart and wishlist related functions.
+
+host: cart.sample.com
+
+schemes:
+  - https
+
+basePath: /v1
+
+produces:
+  - application/json
+
+parameters:
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: true
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  SessionHeader:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: true
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+  CartItemId:
+    name: id
+    in: path
+    description: Id of the cart item
+    type: integer
+    format: int64
+    required: true
+  WishlistItemId:
+    name: id
+    in: path
+    description: Id of the wishlist item
+    type: integer
+    format: int64
+    required: true
+  CartItemBody:
+    name: cartItemBody
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        offerId:
+          type: string
+        quantity:
+          type: integer
+  WishlistItemBody:
+    name: wishlistItemBody
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        offerId:
+          type: string
+  CartItemQuantityBody:
+    name: cartItemQuantityBody
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        quantity:
+          type: integer
+
+paths:
+
+  /cart:
+    get:
+      tags:
+        - sample-rest
+      description: |
+        Get the `Cart` for the session
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Successful response
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          schema:
+            $ref: '#/definitions/Cart'
+          examples:
+            application/json:
+              items:
+                - title: Bear Song
+                  subtitle: Cool Bear
+                  quantity: 2
+                  price: 44.55
+                  offerId: "12345"
+                  image: http://img.memecdn.com/a-little-song_o_647990.jpg
+                  id: "12"
+                - title: Development
+                  subtitle: Production
+                  quantity: 1
+                  price: 11.55
+                  offerId: "44345"
+                  image: https://i.memecaptain.com/gend_images/fwio-w.jpg
+                  id: "11"
+              billSummary:
+                  title: Overview
+                  subtotal: 70
+                  shipping: 5
+                  net: 75
+                  vat: 22
+                  total: 97
+              bills:
+                - title: Sample CH Warehouse
+                  subtotal: 20
+                  shipping: 5
+                  net: 25
+                  vat: 7
+                  total: 32
+                - title: Sample DE Warehouse
+                  subtotal: 10
+                  shipping: 0
+                  net: 10
+                  vat: 5
+                  total: 15
+                - title: Sample Marketplace
+                  subtotal: 40
+                  shipping: 0
+                  net: 40
+                  vat: 10
+                  total: 50
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      tags:
+        - sample-rest
+      description: |
+        Add new item to the`Cart`
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/CartItemBody'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Its not possible to add this item to the `Cart`
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /cart/count:
+    get:
+      tags:
+        - sample-rest
+      description: |
+        Get the number of items in the cart
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Successful response
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          schema:
+            $ref: '#/definitions/CartCount'
+          examples:
+            application/json:
+              count: 0
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /cart/{id}:
+    put:
+      tags:
+        - sample-rest
+      description: |
+        Add or remove quantity for `id` cart item
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/CartItemId'
+        - $ref: '#/parameters/CartItemQuantityBody'
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Its not possible to change the quantity of that item in the `Cart`
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - sample-rest
+      description: |
+        Remove `id` cart item from the `Cart`
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/CartItemId'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/CartDeleteQuantity'
+          examples:
+            application/json:
+              quantity: 3
+        404:
+          description: Its not possible to remove this item from the `Cart`
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /wishlist:
+    get:
+      tags:
+        - sample-rest
+      description: |
+        Get the `Wishlist` for the session
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Successful response
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          schema:
+            $ref: '#/definitions/Wishlist'
+          examples:
+            application/json:
+              items:
+                - title: Bear Song
+                  subtitle: Cool Bear
+                  price: 44.55
+                  offerId: "12345"
+                  image: http://img.memecdn.com/a-little-song_o_647990.jpg
+                  id: "12"
+                - title: Development
+                  subtitle: Production
+                  price: 11.55
+                  offerId: "44345"
+                  image: https://i.memecaptain.com/gend_images/fwio-w.jpg
+                  id: "11"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    post:
+      tags:
+        - sample-rest
+      description: |
+        Add new item to the`Wishlist`
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/WishlistItemBody'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Successful response
+        404:
+          description: Its not possible to add this item to the `Wishlist`
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /wishlist/count:
+    get:
+      tags:
+        - sample-rest
+      description: |
+        Get the number of items in the `Ẁishlist`
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Succesful response
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          schema:
+            $ref: '#/definitions/WishlistCount'
+          examples:
+            application/json:
+              count: 0
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /wishlist/{id}:
+    delete:
+      tags:
+        - sample-rest
+      description: |
+        Remove `id` wishlist item from the `Wishlist`
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/WishlistItemId'
+      responses:
+        200:
+          description: Succesful response
+        404:
+          description: Its not possible to remove this item from the `Wishlist`
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+
+  Cart:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/CartItem'
+      billSummary:
+          $ref: '#/definitions/BillItem'
+      bills:
+        type: array
+        items:
+          $ref: '#/definitions/BillItem'
+
+  CartItem:
+    type: object
+    properties:
+      title:
+        type: string
+        description: product title
+      subtitle:
+        type: string
+        description: subtitle of the product
+      quantity:
+        type: integer
+        description: number of this product in the cart
+      price:
+        type: number
+        description: price of the product
+      offerId:
+        type: string
+        description: id of the offer
+      image:
+        type: string
+        description: product image url
+      id:
+        type: string
+        description: cart item id
+
+  BillItem:
+    type: object
+    properties:
+      title:
+        type: string
+        description: The title of the bill
+      subtotal:
+        type: number
+        description: The bill subtotal value
+      shipping:
+        type: number
+        description: The shipping cost
+      net:
+        type: number
+        description: The net value of this bill
+      vat:
+        type: number
+        description: The VAT component of this bill
+      total:
+        type: number
+        description: The total value of this bill
+
+  CartCount:
+    type: object
+    properties:
+      count:
+        type: integer
+        description: The exact count of all the items in the cart
+
+  CartDeleteQuantity:
+    type: object
+    properties:
+      quantity:
+        type: integer
+
+  Wishlist:
+    type: object
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/WishlistItem'
+
+  WishlistItem:
+    type: object
+    properties:
+      title:
+        type: string
+        description: product title
+      subtitle:
+        type: string
+        description: subtitle of the product
+      price:
+        type: number
+        description: price of the product
+      offerId:
+        type: string
+        description: id of the offer
+      image:
+        type: string
+        description: product image url
+      id:
+        type: string
+        description: wishlist item id
+
+  WishlistCount:
+    type: object
+    properties:
+      count:
+        type: integer
+        description: The exact count of all the items in the wishlist
+
+  Error:
+    type: object
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      uuid:
+        type: string

@@ -1,0 +1,202 @@
+---
+swagger: '2.0'
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+
+info:
+  version: "1.0.0"
+  title: The Sample Recommendation API
+  description:
+    The Sample Recommendation API provides different endpoints for different 
+    types of recommendations. Each endpoint uses different approaches and 
+    algorithms internally and works with different variables as input parameters
+
+################################################################################
+#                  Host, Base Path, Schemes and Content Types                  #
+################################################################################
+host: recommendation.sample.com
+basePath: /v1
+schemes:
+  - https
+produces:
+  - application/json
+
+################################################################################
+#                                   Paths                                      #
+################################################################################
+
+paths:
+
+  /similarproducts:
+    get:
+      description: retrieves a recomendation list based on product's metadata
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/Duin'
+      tags: 
+      - sample-rest
+      responses:
+        200:
+          description: OK
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          schema:
+            $ref: '#/definitions/RecommendedProducts'
+          examples:
+            application/json:
+              - name: Extreme Noise Terror 
+                price: 33.50
+                duin: 0634158671883
+                contributors: ["author1","author2","author3"]
+                releaseDate: '2010-04-23T00:00:00.000Z'
+                categories: [
+                  {
+                     "name": "Konzerte, Sinfonien & Orchestermusik",
+                     "handle": "d1011288"
+                  },
+                  {
+                     "name": "Kammermusik",
+                     "handle": "886229d1"
+                  }
+               ]
+              - name: Insubmersible
+                price: 17.95
+                duin: 3426300030245
+                contributors: ["author1","author2","author3"]
+                releaseDate: '2013-12-02T00:00:00.000Z'
+                categories: [
+                  {
+                     "name": "Konzerte, Sinfonien & Orchestermusik",
+                     "handle": "d1011288"
+                  }
+               ]
+        400:
+          description: Bad Request
+          schema: 
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema: 
+            $ref: '#/definitions/Error'
+        500: 
+          description: Internal Server Error
+          schema: 
+            $ref: '#/definitions/Error'
+        501: 
+          description: Not Implemented
+          schema: 
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+
+definitions:
+  RecommendedProducts:
+    type: array
+    items:
+      $ref: '#/definitions/RecommendedProduct'
+
+  RecommendedProduct:
+    type: object
+    properties:
+      duin:
+        type: string
+        description: duin
+      name:
+        type: string
+        description: Product name
+      price:
+        type: number
+        format: float
+        description: Product name
+      releaseDate:
+        type: string
+        format: date-time
+        description: date of release
+      categories:
+        type: array
+        items:
+          $ref: '#/definitions/Category'
+        description: categories, to which this product belongs
+      contributors:
+        type: object
+        description: a list of contributors for this product
+        
+  Category:
+    type: object
+    properties:
+      handle:
+        type: string
+      name:
+        type: string
+        
+        
+  Error:
+    type: object
+    properties:
+      id:
+        type: string
+        description: HTTP response code
+      message:
+        type: string
+        description: a description of what happened during this request and why the response is this
+      uuid:
+        type: string
+        description: an unique ID for this response 
+
+################################################################################
+#                                 Parameters                                   #
+################################################################################
+        
+parameters:
+
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  
+  SessionHeader:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: false
+    type: string
+    
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+
+  Duin:
+    name: duin
+    in: query
+    description: The Duin of the product that is recommended
+    required: true
+    type: string
+    
+
+  

@@ -1,0 +1,275 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Inventory API
+  description: Provides services for inventory related functions.
+host: inventory.sample.com
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+parameters:
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  DomainHeaderRequired:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: true
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+  DuinPath:
+    name: duin
+    in: path
+    description: Duin of the product
+    type: string
+    required: true
+  OfferIdPath:
+    name: offerid
+    in: path
+    description: OfferId of the product
+    type: string
+    required: true
+  OffersBody:
+    name: OffersBody
+    in: body
+    description: Offer ids to retrieve
+    required: true
+    schema:
+      type: object
+      properties:
+        list:
+          type: array
+          items:
+            type: string
+
+paths:
+  '/product/{duin}':
+    get:
+      tags:
+        - sample-rest
+      description: |
+        Get the release date and the manufacturer price for the product
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/DuinPath'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Article'
+          examples:
+            application/json:
+              releaseDate: '2015-07-23T00:00:00.000Z'
+              catalogAddDate: '2015-06-20T00:00:00.000Z'
+              manufacturerSRP: 45.44
+        '404':
+          description: When the offer is not found
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+            
+  '/product/{duin}/offers':
+    get:
+      tags:
+        - sample-rest
+        - advertisement
+      description: |
+        Get all the offers for a product
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/DuinPath'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Offers'
+          examples:
+            application/json:
+              primary:
+                offerId: 1234
+                price: 46
+                seller: Sample
+                deliveryDate: 'bis Mittwoch, 22.03.2017'
+                condition: Neu
+                itemNote: nothing interesting
+              all:
+                - offerId: 1234
+                  price: 46
+                  seller: Sample
+                  deliveryDate: 'bis Mittwoch, 22.03.2017'
+                  condition: Neu
+                  itemNote: nothing interesting
+                - offerId: 367545
+                  price: 55
+                  seller: Givello
+                  deliveryDate: 'bis Mittwoch, 22.05.2017'
+                  condition: Good
+                  itemNote: note to take a note
+        '404':
+          description: When the offer is not found
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  '/offer/{offerid}':
+    get:
+      tags:
+        - cart
+      description: |
+        Get the offer by offerId
+      parameters:
+        - $ref: '#/parameters/DomainHeaderRequired'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/OfferIdPath'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/CartOffer'
+          examples:
+            application/json:
+              offerId: 1234
+              duin: 0008637216122
+              sku: 0008637216122-11
+              price: 46
+              seller: Sample
+              deliveryDate: 'bis Mittwoch, 22.03.2017'
+              condition: Neu
+              itemNote: nothing interesting
+              quantity: 2
+              taxtype: 1
+              
+  '/offer/offers':
+    post:
+      tags:
+        - cart
+      description: |
+        Get multiple offers by offerIds
+      parameters:
+        - $ref: '#/parameters/DomainHeaderRequired'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/OffersBody'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/CartOfferList'
+          examples:
+            application/json:
+              - offerId: 1234
+                duin: 0008637216122
+                sku: 0008637216122-11
+                price: 46
+                seller: Sample
+                deliveryDate: 'bis Mittwoch, 22.03.2017'
+                condition: Neu
+                itemNote: nothing interesting
+                quantity: 222
+                taxtype: 1
+              - offerId: 367545
+                duin: 0008667216122
+                sku: 0008667216122-11
+                price: 55
+                seller: Givello
+                deliveryDate: 'bis Mittwoch, 22.05.2017'
+                condition: Good
+                itemNote: note to take a note
+                quantity: 7
+                taxtype: 2
+definitions:
+  Offers:
+    type: object
+    properties:
+      primary:
+        $ref: '#/definitions/Offer'
+      all:
+        type: array
+        items:
+          $ref: '#/definitions/Offer'
+  Offer:
+    type: object
+    properties:
+      offerId:
+        type: string
+      price:
+        type: number
+      seller:
+        type: string
+      deliveryDate:
+        type: string
+      condition:
+        type: string
+      itemNote:
+        type: string
+  Article:
+    type: object
+    properties:
+      releaseDate:
+        type: string
+      catalogAddDate:
+        type: string
+      manufacturerSRP:
+        type: number
+  CartOffer:
+    type: object
+    properties:
+      offerId:
+        type: string
+      duin:
+        type: string
+      sku:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
+        format: int32
+      seller:
+        type: string
+      deliveryDate:
+        type: string
+      condition:
+        type: string
+      itemNote:
+        type: string
+      taxtype:
+        type: integer
+        format: int32
+  CartOfferList:
+    type: array
+    items:
+      $ref: '#/definitions/CartOffer'
+  Error:
+    type: object
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      uuid:
+        type: string

@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Extreme Noise Terror",
+    "price": 33.50,
+    "duin": "0634158671883",
+    "contributors": ["author1", "author2", "author3"],
+    "releaseDate": "2010-04-23T00:00:00.000Z",
+    "categories": [
+      {
+        "name": "Konzerte, Sinfonien & Orchestermusik",
+        "handle": "d1011288"
+      },
+      {
+        "name": "Kammermusik",
+        "handle": "886229d1"
+      }
+    ]
+  },
+  {
+    "name": "Insubmersible",
+    "price": 17.95,
+    "duin": "3426300030245",
+    "contributors": ["author1", "author2", "author3"],
+    "releaseDate": "2013-12-02T00:00:00.000Z",
+    "categories": [
+      {
+        "name": "Konzerte, Sinfonien & Orchestermusik",
+        "handle": "d1011288"
+      }
+    ]
+  }
+]

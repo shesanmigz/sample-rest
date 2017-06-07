@@ -1,0 +1,58 @@
+{
+  "categories": [
+    {
+      "name": "Jazz",
+      "handle": "104"
+    },
+    {
+      "name": "Kammermusik",
+      "handle": "886229d1"
+    }
+  ],
+  "filtergroups": [
+    {
+      "handle": "8b3e55c8",
+      "name": "Sprache",
+      "filters": [
+        {
+          "handle": "dbec6605",
+          "name": "",
+          "count": 26
+        },
+        {
+          "handle": "ad5f7ddc",
+          "name": "",
+          "count": 14
+        },
+        {
+          "handle": "13c99f8f",
+          "name": "",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "sortings": [
+    {
+    "handle": "aaabbbccc",
+    "name": "beliebteste"
+    },
+    {
+    "handle": "dddeeefff",
+    "name": "A to Z"
+    }
+  ],
+  "products": [
+    {
+    "gtin": "4011222330024",
+    "name": "Grammy Nominated, 1 Audio-CD",
+    "price": 21.29
+    },
+    {
+    "gtin": "4011222330055",
+    "name": "La Figlia del Reggimento, 2 Audio-CDs",
+    "price": 8.42,
+    "releaseDate": "2010-04-23T00:00:00.000Z"
+    }
+  ]
+}

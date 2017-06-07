@@ -1,0 +1,158 @@
+{
+  "id": "checkout-id",
+  "billSummary": {
+    "title": "Bill Summary",
+    "subtotal": 1.23,
+    "shipping": 2.34,
+    "net": 3.45,
+    "vat": 4.56,
+    "total": 5.67
+  },
+  "orders": [
+    {
+      "bill": {
+        "title": "Bill Summary",
+        "subtotal": 1.23,
+        "shipping": 2.34,
+        "net": 3.45,
+        "vat": 4.56,
+        "total": 5.67
+      },
+      "orderLines": [
+        {
+          "quantity":12,
+          "title":"Super Talent Technology Pico-C 8GB",
+          "subtitle":"The best USB Stick",
+          "duin":"K12341KJ333",
+          "imageUrl":"http://kids.nationalgeographic.com/content/dam/kids/photos/animals/Reptiles/A-G/green-sea-turtle-closeup-underwater.jpg.adapt.945.1.jpg",
+          "merchantName":"Sample",
+          "merchantId":"KJKJKHLJH12314",
+          "unitPrice":50.23,
+          "totalPrice":5023,
+          "deliveryTime":"next friday"
+        }
+      ]
+    }
+  ],
+  "shippingMethod": {
+    "selected" : {
+      "id": "ship01",
+      "name": "Shipping Method 01",
+      "description": "Shipping Method 01 Description"
+    },
+    "all": [
+      {
+        "id": "ship01",
+        "name": "Shipping Method 01",
+        "description": "Shipping Method 01 Description"
+      }
+    ]
+  },
+  "billingAddress": {
+    "selected": {
+      "id": "Id John Doe",
+      "firstName": "John",
+      "lastName": "Doe",
+      "company": "ABC Inc.",
+      "street1": "6649 N Blue Gum St",
+      "street2": "",
+      "street3": "",
+      "zip": "70116",
+      "city": "New Orleans",
+      "country": "USA",
+      "phone": "504-621-8927"
+    },
+    "all": [
+      {
+        "id": "Id John Doe",
+        "firstName": "John",
+        "lastName": "Doe",
+        "company": "ABC Inc.",
+        "street1": "6649 N Blue Gum St",
+        "street2": "",
+        "street3": "",
+        "zip": "70116",
+        "city": "New Orleans",
+        "country": "USA",
+        "phone": "504-621-8927"
+      }
+    ]
+  },
+  "shippingAddress": {
+    "selected": {
+      "id": "Id John Doe",
+      "firstName": "John",
+      "lastName": "Doe",
+      "company": "ABC Inc.",
+      "street1": "6649 N Blue Gum St",
+      "street2": "",
+      "street3": "",
+      "zip": "70116",
+      "city": "New Orleans",
+      "country": "USA",
+      "phone": "504-621-8927"
+    },
+    "all": [
+      {
+        "id": "Id John Doe",
+        "firstName": "John",
+        "lastName": "Doe",
+        "company": "ABC Inc.",
+        "street1": "6649 N Blue Gum St",
+        "street2": "",
+        "street3": "",
+        "zip": "70116",
+        "city": "New Orleans",
+        "country": "USA",
+        "phone": "504-621-8927"
+      }
+    ]
+  },
+  "handling": {
+    "selected": [
+      {
+        "id": "hand01",
+        "name": "Handling 01",
+        "description": "Handling 01 Description"
+      }
+    ],
+    "all": [
+      {
+        "id": "hand01",
+        "name": "Handling 01",
+        "description": "Handling 01 Description"
+      }
+    ]
+  },
+  "paymentMethod": {
+    "selected": {
+      "id": "paypal",
+      "name": "Paypal",
+      "description": "Paypal Payment Method",
+      "form": "Paypal Method form"
+    },
+    "all": [
+      {
+        "id": "paypal",
+        "name": "Paypal",
+        "description": "Paypal Payment Method",
+        "form": "Paypal Method form"
+      }
+    ]
+  },
+  "previewResult": {
+    "success": true,
+    "redirectUrl": "http://preview-result-redirect-url.xyz",
+    "message": "Preview Result"
+  },
+  "buyResult": {
+    "success": true,
+    "redirectUrl": "http://buy-result-redirect-url.xyz",
+    "message": "Buy Result"
+  },
+  "completeResult": {
+    "success": true,
+    "redirectUrl": "http://complete-result-redirect-url.xyz",
+    "message": "Complete Result"
+  }
+}

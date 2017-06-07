@@ -1,0 +1,126 @@
+swagger: '2.0'
+info:
+  version: "1.0.1"
+  title: Advertisement API
+  description: Provides campaign, carousel and category highlights
+host: advertisement.sample.com
+schemes: 
+  - https
+basePath: /v1
+produces:
+  - application/json
+parameters:
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+  PageId:
+    name: pageId
+    in: query
+    description: page id
+    type: string
+    required: false
+paths:
+  /page:
+    get:
+      summary: page
+      description: return structure and content for the page
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/PageId'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: page
+          schema:
+            $ref: '#/definitions/Components'
+          examples:
+            application/json:
+              - component: slider
+                items:
+                    - html: slider
+              - component: grid
+                fixed: fixed
+                fixedPosition: left
+                items:
+                  - html: grid
+              - component: carousel
+                title:
+                    html: title
+                items:
+                  - html: carousel
+          headers: 
+                X-Sample-Commit: 
+                  description: Git Commit ID,
+                  type: string
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Components:
+    type: array
+    items:
+      $ref: '#/definitions/Component'
+  Component:
+    type: object
+    properties:
+      title:
+         $ref: '#/definitions/Item'
+      component:
+        type: string
+        description: component type (slider|grid|carousel)
+      value:
+        $ref: '#/definitions/ComponentItem'
+  ComponentItem:
+    type: object
+    properties:
+      fixed:
+        $ref: '#/definitions/Item'
+      fixedPosition:
+        type: string
+        description: positon from fixed (left|right)
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Item'
+  Item:
+    type: object
+    properties:
+      html:
+        type: string
+        description: html
+  Error:
+    type: object
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      uuid:
+        type: string

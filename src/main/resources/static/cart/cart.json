@@ -1,0 +1,56 @@
+{
+  "items": [
+    {
+      "title": "Bear Song",
+      "subtitle": "Cool Bear",
+      "quantity": 2,
+      "price": 44.55,
+      "offerId": "12345",
+      "image": "http://img.memecdn.com/a-little-song_o_647990.jpg",
+      "id": "12"
+    },
+    {
+      "title": "Development",
+      "subtitle": "Production",
+      "quantity": 1,
+      "price": 11.55,
+      "offerId": "44345",
+      "image": "https://i.memecaptain.com/gend_images/fwio-w.jpg",
+      "id": "11"
+    }
+  ],
+  "billSummary": {
+    "title": "Overview",
+    "subtotal": 70,
+    "shipping": 5,
+    "net": 75,
+    "vat": 22,
+    "total": 97
+  },
+  "bills": [
+    {
+      "title": "Sample CH Warehouse",
+      "subtotal": 20,
+      "shipping": 5,
+      "net": 25,
+      "vat": 7,
+      "total": 32
+    },
+    {
+      "title": "Sample DE Warehouse",
+      "subtotal": 10,
+      "shipping": 0,
+      "net": 10,
+      "vat": 5,
+      "total": 15
+    },
+    {
+      "title": "Sample Marketplace",
+      "subtotal": 40,
+      "shipping": 0,
+      "net": 40,
+      "vat": 10,
+      "total": 50
+    }
+  ]
+}

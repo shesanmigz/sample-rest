@@ -1,0 +1,53 @@
+{  
+"date":"2012-04-23T18:25:43.511Z",
+"orderId":"1234 5678 9874 5612",
+"status":"Paid",
+"amount":15.58,
+"shippingAddress":{
+"id": "Id Max Mueller",
+"firstName":"Max",
+"lastName":"Mueller",
+"company":"Meine AG",
+"street1":"WiesenStrasse 12",
+"street2":"Stock 1/2/3",
+"street3":null,
+"zip":"1220",
+"city":"Wien",
+"country":"Österreich",
+"phone":"+43 660 1234 123"
+},
+"billingAddress":{
+"id": "Id Max Mueller",
+"firstName":"Max",
+"lastName":"Mueller",
+"company":"Asdf AG",
+"street1":"Andere Strasse 123",
+"street2":"Stiege 5 / Tuer 8",
+"street3":"Zimmer 17",
+"zip":"1111",
+"city":"Zug",
+"country":"Schweiz",
+"phone":"+41 78 12345 123"
+},
+"shippingMethod":"Post AG",
+"paymentMethod":"PayPal",
+"bill":{  
+"subtotal":90,
+"shipping":8,
+"net":98,
+"vat":2,
+"total":100
+},
+"orderLines":[{
+"quantity":12,
+"title":"Super Talent Technology Pico-C 8GB",
+"subtitle":"The best USB Stick",
+"duin":"K12341KJ333",
+"imageUrl":"http://kids.nationalgeographic.com/content/dam/kids/photos/animals/Reptiles/A-G/green-sea-turtle-closeup-underwater.jpg.adapt.945.1.jpg",
+"merchantName":"Sample",
+"merchantId":"KJKJKHLJH12314",
+"unitPrice":50.23,
+"totalPrice":5023,
+"deliveryTime":"next friday"
+}]
+}

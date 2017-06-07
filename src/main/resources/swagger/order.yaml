@@ -1,0 +1,576 @@
+swagger: '2.0'
+info:
+  title: Order API
+  description: Provides an interface to create, list and modify order related data.
+  version: "1.0.0"
+host: order.sample.com
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+parameters:
+  DomainHeaderRequired:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: true
+    type: string
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  SessionHeaderRequired:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: true
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+  OrderIdPath:
+    name: orderId
+    in: path
+    description: Order Identifier
+    required: true
+    type: string
+  MerchantIdPath:
+    name: merchantId
+    in: path
+    description: Merchant Identifier
+    required: true
+    type: string
+  SellerOrderBody:
+    name: sellerOrderBody
+    in: body
+    description: Data which is needed for confirming order positions/orders
+    required: true
+    schema:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            properties:
+              orderId:
+                type: string
+              orderPosId:
+                type: string
+              sku:
+                type: string
+paths:
+  /orders:
+    get:
+      summary: Returns order overview
+      description: |
+        This method returns a list of orders of a customer. It only contains the overview. The details of an order need to be retrieved separately. This method will return a fixed number of entries and not all orders. For retrieving all orders, multiple requests need to be made using the next page header.
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeaderRequired'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: Orders
+          schema:
+            $ref: '#/definitions/OrdersOverview'
+          examples:
+            application/json:
+              - date: "2012-04-23T18:25:43.511Z"
+                orderId: "1234 5678 9874 5612"
+                status: "Paid"
+                amount: 15.58
+              - date: "2014-05-12T12:22:11.511Z"
+                orderId: "9999 8888 7777 6666"
+                status: "In Progress"
+                amount: 1823.23
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /orders/{orderId}:
+    get:
+      summary: Returns data of a single order
+      description: |
+        Provides detailed information of a specific order.
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/OrderIdPath'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: Order
+          schema:
+            $ref: '#/definitions/Order'
+          examples:
+            application/json:
+              date: "2012-04-23T18:25:43.511Z"
+              orderId: "1234 5678 9874 5612"
+              status: "Paid"
+              amount: 15.58
+              shippingAddress:
+                name: Max Mueller
+                company: Meine AG
+                street1: WiesenStrasse 12
+                street2: Stock 1/2/3
+                street3:
+                zip: 1220
+                city: Wien
+                country: Österreich
+                phone: +43 660 1234 123
+              billingAddress:
+                name: Max Mueller
+                company: Asdf AG
+                street1: Andere Strasse 123
+                street2: Stiege 5 / Tuer 8
+                street3: Zimmer 17
+                zip: 1111
+                city: Zug
+                country: Schweiz
+                phone: +41 78 12345 123
+              shippingMethod: Post AG
+              paymentMethod: PayPal
+              bill:
+                subtotal: 90.00
+                shipping: 8.00
+                net: 98.00
+                vat: 2.00
+                total: 100.00
+              orderLines:
+                quantity: 12
+                title: Super Talent Technology Pico-C 8GB
+                subtitle: The best USB Stick
+                duin: K12341KJ333
+                imageUrl: http://kids.nationalgeographic.com/content/dam/kids/photos/animals/Reptiles/A-G/green-sea-turtle-closeup-underwater.jpg.adapt.945.1.jpg
+                merchantName: Sample
+                merchantId: KJKJKHLJH12314
+                unitPrice: 50.23
+                totalPrice: 5023.00
+                deliveryTime: next friday
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /orders/merchant/{merchantId}:
+    get:
+      summary: Returns order overview and order data
+      description: |
+        Provides global and detailed information for all orders by merchantId.
+      parameters:
+        - $ref: '#/parameters/DomainHeaderRequired'
+        - $ref: '#/parameters/MerchantIdPath'
+      tags:
+        - seller-api
+      responses:
+        200:
+          description: |
+            List of all orders and its details in state progress by merchantId.
+          schema:
+            $ref: '#/definitions/SellerOrders'
+          examples:
+            application/json:
+              merchantId: "AAAAAL"
+              orders:
+                orderId: "1234-5678-9874-5612"
+                date: "2012-04-23T18:25:43.511Z"
+                status: "In Progress"
+                customerId: "asds-dasd-sdds-dasd"
+                shipping:
+                  countryCode: "DE"
+                  externalAddressId: 5
+                  firstname: "Mark"
+                  lastname: "Zuckerberg"
+                  address1: "Handelskai 20"
+                  address2: ""
+                  address3: ""
+                  zip: "1130"
+                  vatNumber: "DE1234323423"
+                  city: "Wien"
+                  state: "AT"
+                  phone: "06605488376"
+                billing:
+                  countryCode: "DE"
+                  externalAddressId: 5
+                  firstname: "Mark"
+                  lastname: "Zuckerberg"
+                  address1: "Handelskai 20"
+                  address2: ""
+                  address3: ""
+                  zip: "1130"
+                  vatNumber: "DE1234323423"
+                  city: "Wien"
+                  state: "AT"
+                  phone: "06605488376"
+                orderLines:
+                  sku: "1"
+                  duin: "123ASD23981"
+                  orderPosId: "123456789-0001"
+                  priceGross: 5.45
+                  priceNet: 5.10
+                  currency: "EUR"
+                  shipTime: "1TO3"
+                  fromDate: "1238649727832"
+                  toDate: "1238649727832"
+                  taxTypeId: 1
+                  condition: "NEW"
+                  status: "In Progress"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /orders/confirm/{merchantId}:
+    post:
+      summary: Confirms the order position status and eventually updates the order status.
+      description: |
+        Provides data of order position which were confirmed from a merchant on the Seller-Platform.
+      parameters:
+        - $ref: '#/parameters/DomainHeaderRequired'
+        - $ref: '#/parameters/MerchantIdPath'
+        - $ref: '#/parameters/SellerOrderBody'
+      tags:
+        - seller-api
+      responses:
+        200:
+          description: |
+            Status of the procedure. Status can eather be OK or ERROR.
+          schema:
+            $ref: '#/definitions/SellerOrderStatusMessage'
+          examples:
+            application/json:
+                - status: "OK"
+                  orderId: "1234-4567-1234-2222"
+                  message: "All seems good here"
+                - status: "ERROR"
+                  orderId: "2222-3333-4444-5555"
+                  message: "There was something wrong"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /orders/cancel/{merchantId}:
+    post:
+      summary: Cancels the order position status and eventually updates the order status.
+      description: |
+        Provides data of order position which were cancelled from a merchant on the Seller-Platform.
+      parameters:
+        - $ref: '#/parameters/DomainHeaderRequired'
+        - $ref: '#/parameters/MerchantIdPath'
+        - $ref: '#/parameters/SellerOrderBody'
+      tags:
+        - seller-api
+      responses:
+        200:
+          description: |
+            Status of the procedure. Status can eather be OK or ERROR.
+          schema:
+            $ref: '#/definitions/SellerOrderStatusMessage'
+          examples:
+            application/json:
+                - status: "OK"
+                  orderId: "1234-4567-1234-2222"
+                  message: "All seems good here"
+                - status: "ERROR"
+                  orderId: "2222-3333-4444-5555"
+                  message: "There was something wrong"
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  OrdersOverview:
+    type: array
+    items:
+      $ref: '#/definitions/OrderOverview'
+  OrderOverview:
+    type: object
+    properties:
+      date:
+        type: string
+        description: The date when the order was placed
+      orderId:
+        type: string
+        description: The unique identifier of the order
+      status:
+        type: string
+        description: The current status of the order
+      amount:
+        type: number
+        description: The total amount of the order
+  Error:
+    type: object
+    properties:
+      id:
+        description: The unique error code throughout the application
+        type: string
+      uuid:
+        description: Trace id got from the trace header of the request
+        type: string
+      message:
+        description: Description of the error
+        type: string
+  Address:
+    type: object
+    properties:
+      id:
+        type: string
+      firstName:
+        type: string
+        description: Firstname
+      lastName:
+        type: string
+        description: Lastname
+      company:
+        type: string
+        description: Company Name
+      street1:
+        type: string
+        description: Address Line 1
+      street2:
+        type: string
+        description: Address Line 2
+      street3:
+        type: string
+        description: Address Line 3
+      zip:
+        type: string
+        description: ZIP Code
+      city:
+        type: string
+        description: City
+      country:
+        type: string
+        description: Country Name
+      phone:
+        type: string
+        description: Phone Number
+  Bill:
+    type: object
+    properties:
+      title:
+        type: string
+        description: The title of the bill
+      subtotal:
+        type: number
+        description: a
+      shipping:
+        type: number
+        description: a
+      net:
+        type: number
+        description: a
+      vat:
+        type: number
+        description: a
+      total:
+        type: number
+        description: a
+  OrderLine:
+    type: object
+    properties:
+      quantity:
+        type: number
+        description: a
+      title:
+        type: string
+        description: a
+      subtitle:
+        type: string
+        description: a
+      duin:
+        type: string
+        description: a
+      imageUrl:
+        type: string
+        description: a
+      merchantName:
+        type: string
+        description: a
+      merchantId:
+        type: string
+        description: a
+      unitPrice:
+        type: number
+        description: a
+      totalPrice:
+        type: number
+        description: a
+      deliveryTime:
+        type: string
+        description: a
+  Order:
+    type: object
+    properties:
+      date:
+        type: string
+        description: The date when the order was placed
+      orderId:
+        type: string
+        description: The unique identifier of the order
+      status:
+        type: string
+        description: The current status of the order
+      amount:
+        type: number
+        description: The total amount of the order
+      shippingAddress:
+        $ref: '#/definitions/Address'
+      billingAddress:
+        $ref: '#/definitions/Address'
+      shippingMethod:
+        type: string
+        description: The shipping method used
+      paymentMethod:
+        type: string
+        description: The payment method used
+      bill:
+        $ref: '#/definitions/Bill'
+      orderLines:
+        type: array
+        items:
+          $ref: '#/definitions/OrderLine'
+  SellerOrders:
+    type: object
+    properties:
+      merchantId:
+        type: string
+        description: Merchant's id
+      orders:
+        type: array
+        items:
+          $ref: '#/definitions/SellerOrder'
+      
+  SellerOrder:
+    type: object
+    properties:
+      orderId:
+        type: string
+        description: orderId
+      date:
+        type: string
+        description: order date
+      status:
+        type: string
+        description: order status
+      customerId:
+        type: string
+        description: customer global id from sso
+      shipping:
+        $ref: '#/definitions/SellerAddress'
+      billing:
+        $ref: '#/definitions/SellerAddress'
+      orderLines:
+        type: array
+        items:
+          $ref: '#/definitions/SellerOrderLine'
+  SellerOrderLine:
+    type: object
+    properties:
+      sku:
+        type: string
+        description: order item's sku
+      duin:
+        type: string
+        description: order item's duin
+      orderPosId:
+        type: string
+        description: order item's position id
+      priceGross:
+        type: number
+        description: order item's position gross price
+      priceNet:
+        type: number
+        description: order item's position net price
+      currency:
+        type: string
+        description: currency
+      shipTime:
+        type: string
+        description: order item's time to ship
+      fromDate:
+        type: string
+        description: from date
+      toDate:
+        type: string
+        description: to date
+      taxTypeId:
+        type: number
+        description: tax type id
+      condition:
+        type: string
+        description: order item's position condition
+      status:
+        type: string
+        description: order item's position status
+  SellerAddress:
+    type: object
+    properties:
+      countryCode:
+        type: string
+        description: country code
+      externalAddressId:
+        type: number
+        description: external address id
+      firstname:
+        type: string
+        description: Firstname
+      lastname:
+        type: string
+        description: Lastname
+      address1:
+        type: string
+        description: Address Line 1
+      address2:
+        type: string
+        description: Address Line 2
+      address3:
+        type: string
+        description: Address Line 3
+      zip:
+        type: string
+        description: ZIP Code
+      vatNumber:
+        type: string
+        description: vat number
+      city:
+        type: string
+        description: City
+      state:
+        type: string
+        description: Country Name
+      phone:
+        type: string
+        description: Phone Number
+  SellerOrderStatus:
+    type: object
+    properties:
+      status:
+        type: string
+        description: status of the operation
+      orderId:
+        type: string
+        description: orderId
+      message:
+        type: string
+        description: message
+  SellerOrderStatusMessage:
+    type: array
+    items:
+      $ref: '#/definitions/SellerOrderStatus'

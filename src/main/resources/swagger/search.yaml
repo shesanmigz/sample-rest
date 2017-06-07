@@ -1,0 +1,505 @@
+---
+swagger: '2.0'
+
+################################################################################
+#                              API Information                                 #
+################################################################################
+
+info:
+  version: "1.0.0"
+  title: The Sample Search API
+  description: 
+    The Sample Search API provides different types of search like categories, 
+    autocomplete, product search etc.
+
+ 
+################################################################################
+#                  Host, Base Path, Schemes and Content Types                  #
+################################################################################
+host: search.sample.com
+basePath: /v1
+schemes:
+  - https
+produces:
+  - application/json
+
+################################################################################
+#                                   Paths                                      #
+################################################################################
+
+paths:
+
+  /search:
+    get:
+      description:
+        Gets a list of products as a search result
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/LocationHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/Categories'
+        - $ref: '#/parameters/SearchTerm'
+        - $ref: '#/parameters/Filters'
+        - $ref: '#/parameters/PageFrom'
+        - $ref: '#/parameters/PageSize'
+        - $ref: '#/parameters/SortAlgorithm'
+        - $ref: '#/parameters/SortType'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: OK
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          schema:
+            $ref: '#/definitions/SearchApiProducts'
+          examples:
+            application/json:
+              - name: Extreme Noise Terror 
+                price: 33.50
+                gtin: 0634158671883
+                duin: aa1bb2cc3
+                contributors: [
+                  { 
+                    "name" : "Dieter Meschke",
+                    "role" : "author"
+                  },
+                  { 
+                    "name" : "Eugene Vorobiev",
+                    "role" : "Author"
+                  },
+                ]
+                releaseDate: '2010-04-23T00:00:00.000Z'
+                categories: [
+                  {
+                     "name": "Jazz",
+                     "handle": "104"
+                  },
+                  {
+                     "name": "Kammermusik",
+                     "handle": "886229d1"
+                  }
+               ]
+              - name: Insubmersible
+                price: 17.95
+                gtin: 3426300030245
+                contributors: ["author1","author2","author3"]
+                releaseDate: '2013-12-02T00:00:00.000Z'
+                categories: [
+                  {
+                     "name": "Konzerte, Sinfonien & Orchestermusik",
+                     "handle": "d1011288"
+                  }
+               ]
+        400:
+          description: Bad Request
+          schema: 
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema: 
+            $ref: '#/definitions/Error'
+        500: 
+          description: Internal Server Error
+          schema: 
+            $ref: '#/definitions/Error'
+        501: 
+          description: Not Implemented
+          schema: 
+            $ref: '#/definitions/Error' 
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error' 
+                
+  /autocomplete:
+    get:
+      description:
+        retrieves a list of suggested categories and a list of suggested product
+        names for the until now given search term's letters. These lists are 
+        delivered in an object to be shown in the autocomplete dropdown. The 
+        list of product names is a term suggestion for related terms to the 
+        until now given search term letters. They are not product names.
+        After entering each letter, a request has to be sent
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/SearchTerm'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: OK
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          schema:
+               $ref: '#/definitions/AutocompleteData'
+          examples:
+            application/json:
+              - searchedPhrase: "harry pot"
+                inCategory: in
+                inAllCategories: In allen Kategorien
+                termssuggestions: ["Stoaberg Musi Trifft Magdalena Neuner","A Musi Für's Ganze Jahr...","20 Fetzige Harmonika Stücke 3"]
+                categoriesSuggestions: [{"handle": "0117","name": "Weltmusik"},{"handle": "0101","name": "Alternative"}]
+        400:
+          description: Bad Request
+          schema: 
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema: 
+            $ref: '#/definitions/Error'
+        500: 
+          description: Internal Server Error
+          schema: 
+            $ref: '#/definitions/Error'
+        501: 
+          description: Not Implemented
+          schema: 
+            $ref: '#/definitions/Error'  
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'              
+
+  /categories:
+    get:
+      description: 
+        retrieves a list of categories/subcategories, related filters and products to this list of categories
+      parameters:
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/CategoryHandle'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: OK
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          schema:
+            $ref: '#/definitions/SearchApiResult'
+          examples:
+            application/json:
+              - categories: [
+                  {
+                     "name": "Jazz",
+                     "handle": "104"
+                  },
+                  {
+                     "name": "Kammermusik",
+                     "handle": "886229d1"
+                  }
+               ]
+              - filters: [
+                {"handle": "8b3e55c8",
+                 "name": "Sprache",
+                  "filters" : [{"handle":"dbec6605", "name":"", "count" : 26},
+                               {"handle":"ad5f7ddc", "name":"", "count" : 14},
+                               {"handle":"13c99f8f", "name":"", "count" : 1}]
+                }]
+              - sortings: [{"handle": "aaabbbccc","name": "beliebteste"},{"handle": "dddeeefff","name": "A to Z"}]
+              - products: [{
+                "gtin": "4011222330024",
+                "name": "Grammy Nominated, 1 Audio-CD",
+                "price": 21.29,
+                "bigImage": "0202/055/330/4011222330055-0300px-001.jpg",
+                },{
+                "gtin": "4011222330055",
+                "name": "La Figlia del Reggimento, 2 Audio-CDs",
+                "price": 8.42,
+                "bigImage": "0202/079/330/4011222330079-0300px-001.jpg"
+                }]
+        400:
+          description: Bad Request
+          schema: 
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema: 
+            $ref: '#/definitions/Error'
+        500: 
+          description: Internal Server Error
+          schema: 
+            $ref: '#/definitions/Error'
+        501: 
+          description: Not Implemented
+          schema: 
+            $ref: '#/definitions/Error' 
+        default:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+
+
+################################################################################
+#                                 Definitions                                  #
+################################################################################
+
+definitions:
+
+  SearchApiProducts:
+    type: array
+    items:
+      $ref: '#/definitions/SearchApiProduct'
+
+  SearchApiProduct:
+    type: object
+    properties:
+      duin:
+        type: string
+        description: A Sample specific Id
+      gtin:
+        type: string
+        description: gtin
+      name:
+        type: string
+        description: Product name
+      price:
+        type: number
+        format: float
+        description: Product name
+      releaseDate:
+        type: string
+        format: date-time
+        description: date of release
+      categories:
+        type: array
+        items:
+          $ref: '#/definitions/Category'
+        description: categories, to which this product belongs
+      contributors:
+        type: array
+        items:
+          $ref: '#/definitions/Contributor'
+        description: a list of contributors for this product
+        
+
+  Contributor:
+    type: object
+    properties:
+      name:
+        type: string
+      role:
+        type: string
+        
+  Contributors:
+    type: object
+    properties:
+      contributors:
+        type: array
+        items:
+          $ref: '#/definitions/Contributor'
+
+  Category:
+    type: object
+    properties:
+      handle:
+        type: string
+      name:
+        type: string
+
+  CategoryTree:
+    type: object
+    properties: 
+      handle:
+        type: string
+      name: 
+        type: string
+      subCategories:
+        type: object
+        items:
+          $ref: '#/definitions/CategoryTree'
+        
+  Filter:
+    type: object
+    properties:
+      handle:
+        type: string
+      name:
+        type: string
+      count:
+        type: integer
+        
+  FilterGroup:
+    type: object
+    properties:
+      filters:
+        type: array
+        items:
+          $ref: '#/definitions/Filter'
+      handle:
+        type: string
+      name:
+        type: string
+        
+
+  Sorting:
+    type: object
+    properties:
+      handle:
+        type: string
+      name:
+        type: string
+        
+  SearchApiResult:
+    type: object
+    properties:
+      filtergroups:
+        type: array
+        items:
+          $ref: '#/definitions/FilterGroup'
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/SearchApiProduct'
+      sortings:
+        type: array
+        items:
+           $ref: '#/definitions/Sorting'
+      categories:
+        type: array
+        items:
+          $ref: '#/definitions/Category'
+           
+      
+  AutocompleteData:
+    type: object
+    properties:
+      searchedPhrase:
+        type: string
+        description: the phrase that has been given for this generated autocomplete
+      inCategory: 
+        type: string
+        description: the translation of the "in" string
+      inAllCategories: 
+        type: string
+        description: the translation of the "in all categories" string
+      termSuggestions:
+        type: array
+        items: 
+          type: string
+        description: a list of term suggestion for the autocomplete list
+      categoriesSuggestions:
+        type: array
+        items: 
+          $ref: '#/definitions/Category'
+        description: a list of suggested categories
+        
+  Error:
+    type: object
+    properties:
+      id:
+        type: string
+        description: HTTP response code
+      message:
+        type: string
+        description: a description of what happened during this request and why the response is this
+      uuid:
+        type: string
+        description: an unique ID for this response  
+
+################################################################################
+#                                 Parameters                                   #
+################################################################################
+        
+parameters:
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+    
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+    
+  SessionHeader:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: false
+    type: string
+    
+  LocationHeader:
+    name: X-Sample-Location
+    in: header
+    description: Location of the user (latitude and langitude OR Address??)
+    required: false
+    type: string
+    
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+    
+  Categories:
+    name: categories
+    in: query
+    description: an array of clicked categories
+    required: false
+    type: string
+    
+  SearchTerm:
+    name: searchterm
+    in: query
+    description: the search term entered by a user, if used for auto-completion, the letter(s) that are given in the search field
+    required: false
+    type: string
+    
+  Filters:
+    name: filters
+    in: query
+    description: selected filters for a search
+    required: false
+    type: string
+    
+  CategoryHandle:
+    name: categoryhandle
+    in: query
+    description: the handle of the category. it is an ID.
+    required: true
+    type: string
+    
+  PageFrom:
+    name: frompage
+    in: query
+    description: Starting page in the pagination
+    required: false
+    type: integer
+  PageSize:
+    name: sizepage
+    in: query
+    description: Number of items shown on one page in pagination
+    required: false
+    type: integer
+    
+  SortAlgorithm:
+    name: sortmethod
+    in: query
+    description: Sorting option for search results. e.g. Sort by Relevance, or Price etc.
+    required: false
+    type: string
+    
+  SortType:
+    name: sorttype
+    in: query
+    description: Sort ascending or descending
+    required: false
+    type: string
+  

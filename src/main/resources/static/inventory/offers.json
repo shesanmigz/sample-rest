@@ -1,0 +1,28 @@
+{
+    "primary": {
+        "offerId": "1234",
+        "price": 46,
+        "seller": "Sample",
+        "deliveryDate": "bis Mittwoch, 22.03.2017",
+        "condition": "Neu",
+        "itemNote": "nothing interesting"
+    },
+    "all": [
+        {
+            "offerId": "1234",
+            "price": 46,
+            "seller": "Sample",
+            "deliveryDate": "bis Mittwoch, 22.03.2017",
+            "condition": "Neu",
+            "itemNote": "nothing interesting"
+        },
+        {
+            "offerId": "367545",
+            "price": 55,
+            "seller": "Givello",
+            "deliveryDate": "bis Mittwoch, 22.05.2017",
+            "condition": "Good",
+            "itemNote": "note to take a note"
+        }
+    ]
+}

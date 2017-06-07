@@ -1,0 +1,148 @@
+swagger: '2.0'
+info:
+  title: Messaging API
+  description: Provides an interface to send messages and notifications using various messaging systems (email, sms, ...)
+  version: "1.0.0"
+host: messaging.sample.com
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+parameters:
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+    
+  EmailBody:
+    name: EmailBody
+    in: body
+    description: Email parameters
+    required: true
+    schema:
+      type: object
+      properties:
+        template:
+          type: string
+          description: The template to use
+        receivers:
+          type: array
+          description: The list of receivers of this notification
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                description: type of lookup to use in order to fetch the final email address (email, userid, ...)
+              value:
+                type: string
+                description: the contact value, for email type it will be an email address
+        placeholders:
+          type: array
+          description: The values used to resolve the keys in the specified template
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+      example:
+        template: order
+        receivers:
+          - type: email
+            value: customr@mail.com
+          - type: userId
+            value: c608faa4-34fb-11e7-a919-92ebcb67fe22
+        placeholders:
+          - key: order.header
+            value: Order confirmation
+          - key: order.number
+            value: Order number
+          - key: order.salut
+            value: Hello
+          - key: order.billing.address
+            value: Billing Address
+           
+paths:
+  /email:
+    post:
+      summary: Sends an email message to one or more registred users
+      description: |
+        This method generates an email sending request that will be later on sent by the system to the specified list of receivers. The receiver can be specified as a direct email address or as an userId that will be resolved into a real email address. The email sending request will be added to a queue and an ID will be assigned to uniquely identify each message (one for each receiver).
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/EmailBody'
+      tags:
+        - question
+        - sample-rest
+      responses:
+        200:
+          description: Successfull request
+          schema:
+              $ref: '#/definitions/EmailSuccess'
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed versio
+          examples:
+            application/json:
+              emailIds:
+                - 8bde853c-3501-11e7-a919-92ebcb67fe44
+                - 92704552-3501-11e7-a919-92ebcb67fe55
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+            
+definitions:
+  EmailSuccess:
+    type: object
+    properties:
+      emailIds:
+        type: array
+        description: an ordered list of emails ids, one for each in the receivers request array, sorted in the same order
+        items:
+          type: string
+              
+  Error:
+    type: object
+    properties:
+      id:
+        description: The unique error code throughout the application
+        type: string
+      uuid:
+        description: Trace id got from the trace header of the request
+        type: string
+      message:
+        description: Description of the error
+        type: string

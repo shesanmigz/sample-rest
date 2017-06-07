@@ -1,0 +1,279 @@
+swagger: '2.0'
+
+info:
+  version: "1.0.0"
+  title: Review API
+  description: Provides services for review related functions.
+  
+host: review.sample.com
+
+schemes:
+  - https
+  
+basePath: /v1
+
+produces:
+  - application/json
+  
+parameters:
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  SessionHeaderRequired:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: true
+    type: string
+  SessionHeader:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: false
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+  DuinPath:
+    name: duin
+    in: path
+    description: Duin of the product
+    type: string
+    required: true
+  IdPath:
+    name: id
+    in: path
+    description: Id of the review
+    type: number
+    required: true
+  BucketQuery:
+    name: number
+    in: query
+    description: Number of buckets to split the rating percentage
+    required: false
+    type: string
+  PageSizeQuery:
+    name: pageSize
+    in: query
+    description: Size of the returned elements
+    required: false
+    type: string
+  VoteBody:
+    name: voteBody
+    in: body
+    description: The vote
+    required: true
+    schema:
+      type: object
+      properties:
+        vote:
+          type: boolean
+    
+paths:
+
+  /product/{duin}/rating:
+    get:
+      tags:
+       - sample-rest
+      description: |
+        Get the ratings for a product
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/DuinPath'
+        - $ref: '#/parameters/BucketQuery'
+      responses:
+        200:
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Rating'
+          examples:
+            application/json:
+              bucketCount: 5
+              rating: 75
+              reviewCounts:
+                - bucket: 1
+                  count: 2
+                - bucket: 2
+                  count: 5
+                - bucket: 3
+                  count: 10
+                - bucket: 4
+                  count: 35
+                - bucket: 5
+                  count: 3
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /product/{duin}/reviews:
+    get:
+      tags:
+       - sample-rest
+      description: |
+        Get all the reviews for a product
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/DuinPath'
+        - $ref: '#/parameters/PageSizeQuery'
+      responses:
+        200:
+          description: Successful response
+          headers:
+            next:
+              type: string
+              description: The link relation for the immediate next page of results.
+            last:
+              type: string
+              description: The link relation for the last page of results.
+            prev:
+              type: string
+              description: The link relation for the first page of results.
+            first:
+              type: string
+              description: The link relation for the immediate previous page of results.
+          schema:
+            $ref: '#/definitions/Reviews'
+          examples:
+            application/json:
+              reviews:
+                - id: 1
+                  user: "John Doe"
+                  date: "2012-04-23T18:25:43.511Z"
+                  content: "It's a really good product"
+                  title: "Good Product"
+                  votes:
+                    up: 34
+                    down: 3
+                  voted: 1
+                - id: 2
+                  user: "Jane Doe"
+                  date: "2013-04-23T18:25:43.511Z"
+                  content: "It's a really bad product"
+                  title: "Bad product"
+                  votes:
+                    up: 0
+                    down: 3
+                  voted: -1
+                - id: 3
+                  user: "Jimmy Doe"
+                  date: "2015-04-23T18:25:43.511Z"
+                  content: "I will not buy this thing again"
+                  title: "Won't buy"
+                  votes:
+                    up: 1
+                    down: 3
+                  voted: 0
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+            
+  /product/{duin}/{id}/vote:
+    put:
+      tags:
+       - sample-rest
+      description: |
+        Vote to a review
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/DuinPath'
+        - $ref: '#/parameters/IdPath'
+        - $ref: '#/parameters/VoteBody'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Successful response
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+
+  Rating:
+    type: object
+    properties:
+      bucketCount:
+        type: number
+      rating:
+        type: number
+      reviewCounts:
+        type: array
+        items:
+          $ref: '#/definitions/Bucket'
+        
+  Bucket:
+    type: object
+    properties:
+      bucket:
+        type: number
+      count:
+        type: number
+      
+  Reviews:
+    type: object
+    properties:
+      reviews:
+        type: array
+        items:
+          $ref: '#/definitions/Review'
+        
+  Review:
+    type: object
+    properties:
+      id:
+        type: number
+      user:
+        type: string
+      date:
+        type: string
+      content:
+        type: string
+      title:
+        type: string
+      votes:
+        $ref: '#/definitions/Votes'
+      voted:
+        type: number
+        description: It can be 1, 0 and -1. 1 mean voted with up -1 means down 0 mean not voted yet for this review.
+    
+  Votes:
+    type: object
+    properties:
+      up:
+        type: number
+      down:
+        type: number
+  
+  Error:
+    type: object
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      uuid:
+        type: string

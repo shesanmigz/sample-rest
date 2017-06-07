@@ -1,0 +1,40 @@
+{
+  "reviews": [
+    {
+      "id":1,
+      "user":"John Doe",
+      "date":"2012-04-23T18:25:43.511Z",
+      "content":"It's a really good product",
+      "title":"Good Product",
+      "votes":{
+        "up":34,
+        "down":3
+      },
+      "voted":1
+    },
+    {
+      "id":2,
+      "user":"Jane Doe",
+      "date":"2013-04-23T18:25:43.511Z",
+      "content":"It's a really bad product",
+      "title":"Bad product",
+      "votes":{
+        "up":0,
+        "down":3
+      },
+      "voted":-1
+    },
+    {
+      "id":3,
+      "user":"Jimmy Doe",
+      "date":"2015-04-23T18:25:43.511Z",
+      "content":"I will not buy this thing again",
+      "title":"Won't buy",
+      "votes":{
+        "up":1,
+        "down":3
+      },
+      "voted":0
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+spring:
+  profiles.active: development
+  jackson:
+    serialization-inclusion: NON_NULL
+    serialization:
+      write_dates_as_timestamps: false
+server:
+  use-forward-headers: true
+git:
+  commitId: ~git.commit.id~
+auth:
+  cleanup-period: ${AUTH_CACHE_CLEANUP_PERIOD:3600000}
+  cleanup-shutdown-timeout: ${AUTH_CACHE_CLEANUP_SHUTDOWN_TIMEOUT:5000}
+  token-verification-enabled: ${AUTH_VERIFY_ENABLED:false}
+  audience-name: ${AUTH_VERIFY_AUDIENCE:sample-rest}
+  token-send-enabled: ${AUTH_SEND_ENABLED:false}
+  read-period: ${AUTH_SEND_READ_PERIOD:300000}
+  public-key:
+    reader: ${AUTH_PUBLIC_KEY_READER:com.sample.platform.ui.api.service.impl.AWSPublicKeyReader}
+    read-period: ${AUTH_PUBLIC_KEY_READ_PERIOD:300000} 
+    bucket: ${AUTH_PUBLIC_KEY_AWS_BUCKET:}
+    prefix: ${AUTH_PUBLIC_KEY_AWS_PREFIX:}
+    region: ${AUTH_PUBLIC_KEY_AWS_REGION:}
+    access-key: ${AUTH_PUBLIC_KEY_AWS_ACCESS:}
+    secret-key: ${AUTH_PUBLIC_KEY_AWS_SECRET:}
+  token-source: ${AUTH_SEND_TOKEN_SOURCE:com.sample.platform.ui.api.service.impl.AWSTokenSource}
+  aws-token-source:
+    bucket: ${AUTH_SEND_AWS_BUCKET:}
+    prefix: ${AUTH_SEND_AWS_PREFIX:}
+    region: ${AUTH_SEND_AWS_REGION:}
+    access-key: ${AUTH_SEND_AWS_ACCESS:}
+    secret-key: ${AUTH_SEND_AWS_SECRET:}
+logging:
+  level:
+    com.sample: ${LOG_LEVEL:TRACE}
+header-builder:
+  headers:
+    - name: X-Sample-Checkout
+      patterns:
+        # http://stackoverflow.com/questions/7905929/how-to-test-valid-uuid-guid 
+        - '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+    - name: X-Sample-Session
+      patterns: 
+        - '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+    - name: X-Sample-Trace
+      patterns: 
+        - '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$'
+    - name: X-Sample-RemoteIp
+      patterns:
+        # http://stackoverflow.com/questions/5284147/validating-ipv4-addresses-with-regexp
+        - '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+        # http://stackoverflow.com/questions/53497/regular-expression-that-matches-valid-ipv6-addresses
+        - '(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))'
+    - name: X-Sample-Domain
+      patterns:
+        # http://stackoverflow.com/questions/11809631/fully-qualified-domain-name-validation
+        - '(?=^.{1,253}$)(^(((?!-)[a-zA-Z0-9-]{1,63}(?<!-))|((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63})$)'
+    - name: X-Sample-Language
+      patterns:
+        - '[a-z][a-z]_[a-z][a-z]'
+    - name: X-Sample-Location
+      patterns:
+        - '[+-]?[0-9]+(\.[0-9]+)?\s+[+-]?[0-9]+(\.[0-9]+)?'
+---
+
+spring:
+  profiles: development
+auth:
+  public-key:
+    reader: ${AUTH_PUBLIC_KEY_READER:}
+ext:
+  localization:
+    url: ${LOCALIZATION_URL:}
+    timeout: ${LOCALIZATION_TIMEOUT:2000}
+  order:
+    url: ${ORDER_URL:}
+    timeout: ${ORDER_TIMEOUT:2000}
+  inventory:
+    url: ${INVENTORY_URL:}
+    timeout: ${INVENTORY_TIMEOUT:2000}
+  content:
+    url: ${CONTENT_URL:}
+    timeout: ${CONTENT_TIMEOUT:2000}
+  cart:
+    url: ${CART_URL:}
+    timeout: ${CART_TIMEOUT:2000}
+  user:
+    url: ${USER_URL:}
+    timeout: ${USER_TIMEOUT:2000}
+  search:
+    url: ${SEARCH_URL:}
+    timeout: ${SEARCH_TIMEOUT:2000}
+  checkout:
+    url: ${CHECKOUT_URL:}
+    timeout: ${CHECKOUT_TIMEOUT:2000}
+  advertisement:
+    url: ${ADVERTISEMENT_URL:}
+    timeout: ${ADVERTISEMENT_TIMEOUT:2000}
+  recommendation:
+    url: ${RECOMMENDATION_URL:}
+    timeout: ${RECOMMENDATION_TIMEOUT:2000}
+  review:
+    url: ${REVIEW_URL:}
+    timeout: ${REVIEW_TIMEOUT:2000}
+  messaging:
+    url: ${MESSAGING_URL:}
+    timeout: ${MESSAGING_TIMEOUT:2000}
+
+---
+
+spring:
+  profiles: test
+auth:
+  public-key:
+    reader: ${AUTH_PUBLIC_KEY_READER:com.sample.platform.ui.api.security.TestPublicKeyReader}
+ext:
+  localization:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  order:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  inventory:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  content:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  cart:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  user:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  search:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  checkout:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  advertisement:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  recommendation:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  review:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  messaging:
+    url: http://localhost:8090/v1
+    timeout: 2000
+
+---
+
+spring:
+  profiles: security-test
+auth:
+  public-key:
+    reader: ${AUTH_PUBLIC_KEY_READER:com.sample.platform.ui.api.security.TestPublicKeyReader}
+  token-verification-enabled: ${AUTH_VERIFY_ENABLED:true}
+  token-send-enabled: ${AUTH_SEND_ENABLED:true}
+  token-source: ${AUTH_SEND_TOKEN_SOURCE:com.sample.platform.ui.api.security.TestTokenSource}
+ext:
+  localization:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  order:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  inventory:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  content:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  cart:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  user:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  search:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  checkout:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  advertisement:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  review:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  recommendation:
+    url: http://localhost:8090/v1
+    timeout: 2000
+  messaging:
+    url: http://localhost:8090/v1
+    timeout: 2000
+
+---
+
+spring:
+  profiles: prod
+auth:
+  token-verification-enabled: ${AUTH_VERIFY_ENABLED:true}
+  token-send-enabled: ${AUTH_SEND_ENABLED:true}
+logging:
+  level:
+    com.sample: ${LOG_LEVEL:DEBUG}
+ext:
+  localization:
+    url: ${LOCALIZATION_URL}
+    timeout: ${LOCALIZATION_TIMEOUT:1000}
+  order:
+    url: ${ORDER_URL}
+    timeout: ${ORDER_TIMEOUT:1000}
+  inventory:
+    url: ${INVENTORY_URL}
+    timeout: ${INVENTORY_TIMEOUT:1000}
+  content:
+    url: ${CONTENT_URL}
+    timeout: ${CONTENT_TIMEOUT:1000}
+  cart:
+    url: ${CART_URL}
+    timeout: ${CART_TIMEOUT:1000}
+  user:
+    url: ${USER_URL}
+    timeout: ${USER_TIMEOUT:1000}
+  search:
+    url: ${SEARCH_URL}
+    timeout: ${SEARCH_TIMEOUT:1000}
+  checkout:
+    url: ${CHECKOUT_URL}
+    timeout: ${CHECKOUT_TIMEOUT:1000}
+  advertisement:
+    url: ${ADVERTISEMENT_URL}
+    timeout: ${ADVERTISEMENT_TIMEOUT:1000}
+  recommendation:
+    url: ${RECOMMENDATION_URL}
+    timeout: ${RECOMMENDATION_TIMEOUT:1000}
+  review:
+    url: ${REVIEW_URL}
+    timeout: ${REVIEW_TIMEOUT:1000}
+  messaging:
+    url: ${MESSAGING_URL}
+    timeout: ${MESSAGING_TIMEOUT:1000}
+    

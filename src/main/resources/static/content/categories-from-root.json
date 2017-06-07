@@ -1,0 +1,7 @@
+[{
+    "handle": "aaaab",
+    "name": "forbidden books",
+    "icon": "secret-books.jpg",
+    "hidden": true,
+    "parentHandle": "aaaaa"
+}]

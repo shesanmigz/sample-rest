@@ -1,0 +1,457 @@
+swagger: '2.0'
+info:
+  title: Content API Gateway
+  description: The Web Services from the CMS for the Sample UI.
+  version: "1.0.0"
+host: localhost
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+parameters:
+  SessionHeader:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: false
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  Duin:
+    name: duin
+    in: path
+    type: string
+    description: Sample unique Identifier (like gtin but better)
+    required: true
+  Duins:
+    name: duins
+    in: body
+    description: List of Sample unique Identifiers
+    required: true
+    schema:
+      type: array
+      items:
+        type: string
+  Depth:
+    name: depth
+    in: query
+    type: integer
+    description: Maximum depth of category levels that is returned in the category-tree. 
+    required: false
+paths:
+  /v1/categories:
+    get:
+      summary: Categories from the root
+      description: |
+        Get the categories from the root.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/Depth'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: A list of categories
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Category'
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          examples:
+             application/json:
+               - handle: aaaab
+                 name: forbidden books
+                 icon: secret-books.jpg
+                 hidden: true
+                 parentHandle: aaaaa
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        405:
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+        501:
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/Error'
+  /v1/categories/{parentHandle}:
+    get:
+      summary: Categories from this handle
+      description: |
+        Get the categories from this handle.
+      parameters:
+        - name: parentHandle
+          in: path
+          type: string
+          description: The handle of the category parent
+          required: true
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/Depth'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: A list of categories
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Category'
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          examples:
+             application/json:
+               - handle: aaaab
+                 name: books
+                 icon: book-icon.jpg
+                 hidden: false
+                 parentHandle: aaaaa
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        405:
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+        501:
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/Error'
+  /v1/product/{duin}/summary:
+    get:
+      summary: Product content data summary.
+      description: |
+        Get the content data summary for a product.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/Duin'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: The summary data of a product.
+          schema:
+            $ref: '#/definitions/ProductDetail'
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          examples:
+            application/json:
+              title: harry potter
+              subtitle: more of that magic
+              categories: 
+                - handle: aaaab
+                  name: books
+                - handle: aaabb
+                  name: fantasy-books
+              media: 
+                - type: image
+                  url: http://static34.sample.com/harry-potter.jpg
+                  sizeX: 1920
+                  sizeY: 1080
+                - type: youtube-video
+                  url: http://youtube.com/harry-potter-video
+                  sizeX: 1920
+                  sizeY: 1080
+              hidden: false
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        405:
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+        501:
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/Error'
+  /v1/product/{duin}/details:
+    get:
+      summary: Product content data details.
+      description: |
+        Get the content data detail for a product. It is not a JSON answer but an HTML answer.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/Duin'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: The details of a product.
+          schema:
+            type: string
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          examples: 
+            response: "<div><H3>New harry potter book, buy it!</H3></div>"
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        405:
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+        501:
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/Error'            
+  /v1/product/compact:
+    post:
+      summary: Product content data for the Shop.
+      description: |
+        Get the content data of a product for the Shop.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/Duins'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+      tags:
+        - content-cache
+      responses:
+        200:
+          description: The data of a product for the Shop.
+          schema:
+            $ref: '#/definitions/ShopProducts'
+          headers:
+            X-Sample-Commit:
+              type: string
+              description: The Git commit hash of the deployed version
+          examples:
+            application/json:
+              - duin: JLLR5O4L0U1
+                title: "Toolroom Knights: Mixed by Umek"
+                contributor: Umek
+                image: https://c1-static.sample.com/images/0202/861/007/5052075007861-0300px-001.jpg
+              - duin: RV83NM4JMJM
+                title: "Out Of Play"
+                contributor: Umek & Beltek 
+                image: https://c1-static.sample.com/images/0202/295/008/5052075008295-0300px-001.jpg
+        400:
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: Not Authorized
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/Error'
+        405:
+          description: Method not allowed
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/Error'
+        501:
+          description: Not Implemented
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Category:
+    type: object
+    properties:
+      handle:
+        type: string
+        description: Unique identifier representing a Category.
+      name:
+        type: string
+        description: The name of a category.
+      icon:
+        type: string
+        description: The URL of the category's icon.
+      hidden:
+        type: boolean
+        description: Flag to hide the category or not.
+      parentHandle:
+        type: string
+        description: Unique Identifier of the parent Category.
+  ProductDetail:
+    type: object
+    properties:
+      title:
+        type: string
+        description: The title of a product.
+      subtitle:
+        type: string
+        description: The subtitle of a product.
+      categories:
+        type: array
+        items:
+          $ref: '#/definitions/Breadcrumb'
+      media:
+        type: array
+        items:
+          $ref: '#/definitions/Media'
+      hidden:
+        type: boolean
+        description: Flag to hide the category or not.
+  Breadcrumb:
+    type: object
+    properties:
+      handle:
+        type: string
+        description: Unique identifier representing a Category.
+      name:
+        type: string
+        description: The name of a category.
+  Media:
+    type: object
+    properties:
+      type:
+        type: string
+        description: Type of the media, image or video.
+      url:
+        type: string
+        description: The AWS CloudFront url of the media.
+      sizeX:
+        type: integer
+        description: The width of the media.
+      sizeY:
+        type: integer
+        description: The height of the media.  
+  ShopProducts:
+    type: array
+    items: 
+      $ref: '#/definitions/ShopProduct'
+  ShopProduct:
+    type: object
+    properties:
+      duin:
+        type: string
+        description: The duin of a product.
+        example: "JLLR5O4L0U1"
+      title:
+        type: string
+        description: The title of a product.
+        example: "Toolroom Knights: Mixed by Umek"
+      contributor:
+        type: string
+        description: The main contributor of a product.
+        example: "Umek"
+      image:
+        type: string
+        description: The AWS CloudFront url of the image.
+        example: "https://c1-static.sample.com/images/0202/861/007/5052075007861-0300px-001.jpg"
+  Error:   
+    type: object
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      uuid:
+        type: string

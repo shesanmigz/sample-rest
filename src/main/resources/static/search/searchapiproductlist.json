@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Extreme Noise Terror",
+    "price": 33.5,
+    "gtin": "0634158671883",
+    "duin": "aa1bb2cc3",
+    "contributors": [
+      { 
+        "name" : "Dieter Meschke",
+        "role" : "author"
+      },
+      { 
+        "name" : "Eugene Vorobiev",
+        "role" : "Author"
+      }
+    ],
+    "releaseDate": "2010-04-23T00:00:00.000Z",
+    "categories": [
+      {
+        "name": "Jazz",
+        "handle": "104"
+      },
+      {
+        "name": "Kammermusik",
+        "handle": "886229d1"
+      }
+    ]
+  },
+  {
+    "name": "Insubmersible",
+    "price": 17.95,
+    "gtin": "3426300030245",
+    "contributors": [
+      { 
+        "name" : "Dieter Meschke",
+        "role" : "author"
+      },
+      { 
+        "name" : "Eugene Vorobiev",
+        "role" : "Author"
+      }
+    ],
+    "releaseDate": "2013-12-02T00:00:00.000Z",
+    "categories": [
+      {
+        "name": "Konzerte, Sinfonien & Orchestermusik",
+        "handle": "d1011288"
+      }
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<layout>
+			<if condition='isDefined("LOG_SINGLE_LINE")'>
+				<then>
+					<Pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z', UTC} %p %logger [%t] \(%X{trace}\) : %replace(%m%n%ex){'\n(?=[^$])','\\n'}%nopex</Pattern>
+				</then>
+				<else>
+					<Pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS'Z', UTC} %p %logger [%t] \(%X{trace}\) : %m%n</Pattern>
+				</else>
+			</if>
+		</layout>
+	</appender>
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>

@@ -1,0 +1,12 @@
+[
+  { "addressId": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "street1": "6649 N Blue Gum St",
+    "street2": "",
+    "street3": "",
+    "zip": "70116",
+    "city": "New Orleans",
+    "country": "USA",
+    "phone": "504-621-8927"}
+]

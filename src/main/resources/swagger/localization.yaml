@@ -1,0 +1,347 @@
+swagger: '2.0'
+info:
+  title: Localization API
+  description: Provides localization services such as translation of Textblocks, list of available languages and related countries.
+  version: "1.0.0"
+host: localization.sample.com
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+parameters:
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  DomainHeaderRequired:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: true
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+  KeyPath:
+    name: key
+    in: path
+    description: Textblock identifier
+    required: true
+    type: string
+  PrefixQuery:
+    name: prefix
+    in: query
+    description: Textblock identifier prefix
+    required: false
+    type: string
+paths:
+  /textblocks:
+    get:
+      summary: Textblocks
+      description: |
+        The Textblocks endpoint returns all textblocks defined. If the prefix query parameter is specified, then only a subset of Textblocks, that have keys that start with prefix, will be returned. This means that textblocks that might be defined for the domain .at and in the language de but are not defined for .es and es language will not be returned in requests that specify the .es domain and es language.
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/PrefixQuery'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: Textblocks
+          schema:
+            $ref: '#/definitions/Textblocks'
+          examples:
+            application/json:
+              - key: title
+                value: Page Title
+              - key: copyright
+                value: (c) Sample
+  /textblocks/{key}:
+    get:
+      summary: Textblock
+      description: |
+        The Textblock endpoint returns a single textblock. If a textblock does not exist in the exact defined language in the request, a 404 error will be returned. A textblock might even exist (the key) in another language, but still this will return 404 if it does not exist in the specified language.
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/KeyPath'
+      tags:
+       - sample-rest
+      responses:
+        200:
+          description: Textblock
+          schema:
+            $ref: '#/definitions/Textblock'
+          examples:
+            application/json:
+              key: title
+              value: Page Title
+        404:
+          description: Textblock not found
+          schema:
+            $ref: '#/definitions/Error'
+  /languages:
+    get:
+      summary: Languages
+      description: |
+        The Languages endpoint returns available languages. If the domain is not filled out the default field always false.
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: Languages
+          schema:
+            $ref: '#/definitions/Languages'
+          examples:
+            application/json:
+              - id: de_de
+                default: true
+                name: German (Germany)
+              - id: en_gb
+                default: false
+                name: English (United Kingdom)
+  /domains:
+    get:
+      summary: Domains
+      description: |
+        The Domains endpoint returns available domains.
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: Domains
+          schema:
+            $ref: '#/definitions/Domains'
+          examples:
+            application/json:
+              - name: Germany
+                link: https://wwwt.sample.de
+              - name: Switzerland
+                link: https://wwwt.sample.ch
+  /domains/info:
+    get:
+      summary: Domains
+      description: |
+        The Domains endpoint returns available domains.
+      parameters:
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      tags:
+        - checkout
+      responses:
+        200:
+          description: Domains
+          schema:
+            $ref: '#/definitions/DomainInfos'
+          examples:
+            application/json:
+              - name: Germany
+                link: https://wwwt.sample.de
+                domainId: sample.de
+                defaultCountry:
+                  default: true
+                  name: Germany
+                  iso2: DE
+                  iso3: DEU
+                  numericCode: 276
+                currency:
+                  name: Euro
+                  iso: EUR
+                  symbol: €
+              - name: Switzerland
+                link: https://wwwt.sample.ch
+                defaultCountry:
+                  default: true
+                  name: Switzerland
+                  iso2: CH
+                  iso3: CHE
+                  numericCode: 756
+                currency:
+                  name: Swiss Franc
+                  iso: CHF
+                  symbol: CHF
+  /currency:
+    get:
+      summary: Currency
+      description: |
+        The Currency endpoint returns with the currency for the domain
+      parameters:
+        - $ref: '#/parameters/DomainHeaderRequired'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: Currency
+          schema:
+            $ref: '#/definitions/Currency'
+          examples:
+            application/json:
+              name: Swiss Franc
+              iso: CHF
+              symbol: CHF
+  /countries:
+    get:
+      summary: Countries
+      description: |
+        The countries endpoint returns available countries for the domain.
+      parameters:
+        - $ref: '#/parameters/DomainHeaderRequired'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      tags:
+        - sample-rest
+      responses:
+        200:
+          description: Countries
+          schema:
+            $ref: '#/definitions/Countries'
+          examples:
+            application/json:
+             - default: false
+               name: Czechia
+               iso2: CZ
+               iso3: CZE
+               numericCode: 203
+             - default: true
+               name: Germany
+               iso2: DE
+               iso3: DEU
+               numericCode: 276
+             - default: false
+               name: Denmark
+               iso2: DK
+               iso3: DNK
+               numericCode: 208
+definitions:
+  Textblocks:
+    type: array
+    items:
+      $ref: '#/definitions/Textblock'
+  Textblock:
+    type: object
+    properties:
+      key:
+        type: string
+        description: Textblock key
+      value:
+        type: string
+        description: Textblock value
+  Languages:
+    type: array
+    items:
+      $ref: '#/definitions/Language'
+  Language:
+    type: object
+    properties:
+      id:
+        type: string
+        description: Language identifier
+      default:
+        type: boolean
+        description: Is default language
+      name:
+        type: string
+        description: Name of language
+  Domains:
+    type: array
+    items:
+      $ref: '#/definitions/DomainLink'
+  DomainLink:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of domain
+      link:
+        type: string
+        description: Link to site
+  DomainInfos:
+    type: array
+    items:
+      $ref: '#/definitions/DomainInfo'
+  DomainInfo:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of domain
+      link:
+        type: string
+        description: Link to site
+      domainId:
+        type: string
+        description: Id of the domain
+      defaultCountry:
+        $ref: '#/definitions/Country'
+      currency:
+        $ref: '#/definitions/Currency'
+  Currency:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of the currency
+      iso:
+        type: string
+        description: Iso code of the currency
+      symbol:
+        type: string
+        description: Currency symbol
+  Countries:
+    type: array
+    items:
+      $ref: '#/definitions/Country'
+  Country:
+    type: object
+    properties:
+      name:
+        type: string
+        description: Name of country
+      iso2:
+        type: string
+        description: Iso2 notation of the country. This should be in the address country field.
+      iso3:
+        type: string
+        description: Iso3 notation of the country.
+      numericCode:
+        type: integer
+        format: int32
+        description: Numeric code of the country.
+      default:
+        type: boolean
+        description: Is this country is the default of the domain.
+  Error:
+    type: object
+    properties:
+      id:
+        type: string
+      message:
+        type: string
+      uuid:
+        type: string

@@ -1,0 +1,1060 @@
+swagger: "2.0"
+
+info:
+  version: "1.0"
+  title: User Management API
+
+host: user.sample.com
+
+basePath: /v1
+
+schemes:
+  - https
+
+produces:
+  - application/json
+
+parameters:
+  DomainHeader:
+    name: X-Sample-Domain
+    in: header
+    description: Domain identifier
+    required: false
+    type: string
+  SessionHeaderRequired:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: true
+    type: string
+  SessionHeader:
+    name: X-Sample-Session
+    in: header
+    description: Session identifier
+    required: false
+    type: string
+  LanguageHeader:
+    name: X-Sample-Language
+    in: header
+    description: Language identifier
+    required: false
+    type: string
+  TraceHeader:
+    name: X-Sample-Trace
+    in: header
+    description: Trace identifier
+    required: false
+    type: string
+  Register:
+    name: register
+    description: Data input for registration.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        name:
+          type: string
+        emailAddress:
+          type: string
+        password:
+          type: string
+  AddressIdPath:
+    name: addressId
+    description: The address id
+    in: path
+    required: true
+    type: string
+  AddressBody:
+    name: addressBody
+    description: Address Body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        firstName:
+          type: string
+          description: Firstname of the user
+        lastName:
+          type: string
+          description: Lastname of the user
+        street1:
+          type: string
+          description: Address Line 1
+        street2:
+          type: string
+          description: Address Line 2
+        street3:
+          type: string
+          description: Address Line 3
+        zip:
+          type: string
+          description: ZIP Code
+        city:
+          type: string
+          description: City
+        country: 
+          type: string
+          description: Country Name
+        phone:
+          type: string
+          description: Phone Number
+  ChangePasswordAdmin:
+    name: changePasswordAdmin
+    description: Data input for changing a user's password with admin rights.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        emailAddress:
+          type: string
+        newPassword:
+          type: string
+        adminPassword:
+          type: string
+  ResetPassword:
+    name: resetPassword
+    description: Data input for resetting a user's password.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        email:
+          type: string
+          description: the user's e-mail address
+        tmpPassword:
+          type: string
+          description: the users new password, it's optional. If it's there the module will use that, if not than it will generate a new one. Required for the old shop
+  UpdatePassword:
+    name: updatePassword
+    description: Data to change a user's password
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+          description: the user's old password
+        newPassword:
+          type: string
+          description: the user's new password
+  UID:
+    name: UID
+    description: The unique id of the user.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        uid:
+          type: string
+  UserData:
+    name: userData
+    description: The user's data.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+  EmailAddress:
+    name: emailAddress
+    description: Data input of email address.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        emailAddress:
+          type: string
+  TokenLogin:
+    name: tokenLogin
+    description: Data for starting a user session.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+  CheckAdmin:
+    name: checkAdmin
+    description: Data for checking a user by email address for admins.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        emailAddress:
+          type: string
+        adminPassword:
+          type: string
+  UpdateAdmin:
+    name: updateAdmin
+    description: Data for changing user data for admins.
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        emailAddress:
+          type: string
+        name:
+          type: string
+        adminPassword:
+          type: string
+  SearchQuery:
+    name: search
+    description: Text to filter the result
+    in: query
+    required: false
+    type: string
+  PageQuery:
+    name: page
+    description: Page number of the result
+    in: query
+    required: false
+    type: integer
+    default: 1
+  LimitQuery:
+    name: limit
+    in: query
+    required: false
+    type: integer
+    default: 15
+  UidPath:
+    name: uid
+    description: Uid of the user
+    in: path
+    required: true
+    type: string
+  UserIdPath:
+    name: userid
+    description: UserId of the user
+    in: path
+    required: true
+    type: string
+  AddressIdBody:
+    name: addressIdBody
+    description: Address Id in Body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        addressId:
+          type: integer
+          format: int64
+  PaymentMethodIdBody:
+    name: paymentMethodIdBody
+    description: Payment method id in Body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        id:
+          type: string
+paths:
+  /session:
+    post:
+      description: Log in.
+      tags:
+       - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/TokenLogin'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Session'
+          examples:
+            application/json:
+              userId: "user1Id"
+              sessionToken: "3A6ADFE0EFE20FEDE071322A4EEC66E9"
+              name: "user1 name"
+              roles: ["CUSTOMER_SERVICE"]
+        400:
+          description: Wrong login data
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: Wrong login data, max attempt reached, user should be logged out.
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: Validate the session and retrieve information attached to the session.
+      tags:
+       - sample-rest
+       - question
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Session'
+          examples:
+            application/json:
+              userId: "2231234"
+              sessionToken: "3A6ADFE0EFE20FEDE071322A4EEC66E9"
+              name: "Franz Huber"
+              roles: ["CUSTOMER_SERVICE"]
+        404:
+          description: Session is not known, so user is not logged in.
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: Invalidate session.
+      tags:
+       - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Success
+            
+  /user/password:
+    put:
+      description: Update a user's password
+      tags:
+       - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UpdatePassword'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+    delete:
+      description: Reset a user's password. This will generate a new password and send it to the user's e-mail address. The old password is still valid until he logs in with the new password.
+      tags:
+       - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/ResetPassword'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+  /user/data:
+    get:
+      description: Retrieve a user's data. This is different from GET /session, /user/data returns data that is maintained by the user himself, whereas data returned by /session is technical information related to a session and cannot be changed directly by a user.
+      tags:
+       - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserData'
+          examples:
+            application/json:
+              name: "name example"
+              email: "you@email-domain.com"
+    put:
+      description: Update a user's data
+      tags:
+       - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UserData'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+  /user/addresses:
+    get:
+      description: Retrieve a user's addresses. This method does not return all addresses, but only the first X entries. If all addresses need to be fetched, this method needs to be called multiple times using the next page header.
+      tags:
+       - sample-rest
+       - checkout
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserAddresses'
+    post:
+      description: Add an address record for a user.
+      tags:
+        - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/AddressBody'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserAddressId'
+  /user/addresses/{addressId}:
+    get:
+      description: Retrieve a single address record of a user.
+      tags:
+        - sample-rest
+        - checkout
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/AddressIdPath'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserAddress'
+    put:
+      description: Update an address record of a user.
+      tags:
+        - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/AddressIdPath'
+        - $ref: '#/parameters/AddressBody'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+    delete:
+      description: Delete an address record of a user.
+      tags:
+        - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/AddressIdPath'
+      responses:
+        200:
+          description: Success
+  /user/addresses/default/shipping:
+    get:
+      description: Retrieve the default shipping address record of a user.
+      tags:
+        - checkout
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserAddress'
+    put:
+      description: Update the defult shipping address record of a user.
+      tags:
+        - checkout
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/AddressIdBody'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+  /user/addresses/default/billing:
+    get:
+      description: Retrieve the default billing address record of a user.
+      tags:
+        - checkout
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserAddress'
+    put:
+      description: Update the default billing address record of a user.
+      tags:
+        - checkout
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/AddressIdBody'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+  /user/payment/default:
+    get:
+      description: Retrieve the user default payment method id
+      tags:
+        - checkout
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/PaymentMethodId'
+    put:
+      description: Update the default payment method id
+      tags:
+        - checkout
+      parameters:
+        - $ref: '#/parameters/SessionHeaderRequired'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/PaymentMethodIdBody'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+  /profile/{userid}:
+    get:
+      description: Return with the public profile of the user
+      tags:
+       - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UserIdPath'
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Profile'
+  /registration:
+    post:
+      description: This endpoint is for registering a new user.
+      tags:
+        - sample-rest
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/Register'
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Session'
+          examples:
+            application/json:
+              userId: "2231234"
+              sessionToken: "3A6ADFE0EFE20FEDE071322A4EEC66E9"
+              name: "Franz Huber"
+              roles: ["CUSTOMER_SERVICE"]
+  /sso/check:
+    post:
+      description: Check if a user exists with a specific email address.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/EmailAddress'
+      tags:
+        - sso
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Check'
+        400:
+          description: Error in the request object.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error.
+          schema:
+            $ref: '#/definitions/Error'
+  /sso/user:
+    post:
+      description: Get the name of the user.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UID'
+      tags:
+        - sso
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Name'
+        400:
+          description: Error in the request object.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error.
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: Remove user for the database. Only the icinga test should use this.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UID'
+      tags:
+        - sso
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UID'
+        400:
+          description: Error in the request object.
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: Internal error.
+          schema:
+            $ref: '#/definitions/Error'
+  /admin/users:
+    get:
+      description: To get back the user list
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/SearchQuery'
+        - $ref: '#/parameters/PageQuery'
+        - $ref: '#/parameters/LimitQuery'
+      tags:
+        - admin
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/UserList'
+          headers:
+            X-Sample-First:
+              description: Link to the first page of the result
+              type: string
+            X-Sample-Last:
+              description: Link to the last page of the result
+              type: string
+            X-Sample-Prev:
+              description: Link to the prev page of the result
+              type: string
+            X-Sample-Next:
+              description: Link to the next page of the result
+              type: string
+  /admin/users/{uid}:
+    get:
+      description: To get back the user for that uid
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UidPath'
+      tags:
+        - admin
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/User'
+    put:
+      description: Update user with admin privileges.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UidPath'
+        - $ref: '#/parameters/UpdateAdmin'
+      tags:
+        - admin
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Success'
+  /admin/users/{uid}/password:
+    put:
+      description: Change the password of the user.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UidPath'
+        - $ref: '#/parameters/ChangePasswordAdmin'
+      tags:
+        - admin
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Success'
+  /admin/users/{uid}/lock:
+    put:
+      description: Lock the user.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UidPath'
+      tags:
+        - admin
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Success'
+    delete:
+      description: Unlock the user.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UidPath'
+      tags:
+        - admin
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Success'
+  /admin/users/{uid}/trust:
+    put:
+      description: Trust in the user.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UidPath'
+      tags:
+        - admin
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Success'
+    delete:
+      description: Remove trust from the user.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/UidPath'
+      tags:
+        - admin
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Success'
+  /admin/users/check:
+    post:
+      description: Check if a user exists with admin privileges.
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+        - $ref: '#/parameters/CheckAdmin'
+      tags:
+        - admin
+      consumes:
+        - application/json
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessAdmin'
+  /admin/users/count:
+    get:
+      parameters:
+        - $ref: '#/parameters/SessionHeader'
+        - $ref: '#/parameters/DomainHeader'
+        - $ref: '#/parameters/LanguageHeader'
+        - $ref: '#/parameters/TraceHeader'
+      tags:
+        - admin
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: '#/definitions/Count'
+definitions:
+  UID:
+    type: object
+    properties:
+      uid:
+        description: Unique id of the user.
+        type: string
+  Check:
+    type: object
+    properties:
+      exist:
+        description: A flag for marking if the use
+        type: integer
+  Name:
+    type: object
+    properties:
+      name:
+        description: Name of the user.
+        type: string
+  UserData:
+    type: object
+    properties:
+      name:
+        description: Name of the user
+        type: string
+      email:
+        description: E-Mail address of the user
+        type: string
+  UserAddresses:  
+    type: array
+    items:
+      $ref: '#/definitions/UserAddress'
+  UserAddress:
+    type: object
+    properties:
+      addressId:
+        type: integer
+        format: int64
+      firstName:
+        type: string
+        description: Firstname of the user
+      lastName:
+        type: string
+        description: Lastname of the user
+      street1:
+        type: string
+        description: Address Line 1
+      street2:
+        type: string
+        description: Address Line 2
+      street3:
+        type: string
+        description: Address Line 3
+      zip:
+        type: string
+        description: ZIP Code
+      city:
+        type: string
+        description: City
+      country: 
+        type: string
+        description: Country Name
+      phone:
+        type: string
+        description: Phone Number
+  UserAddressId:
+    type: object
+    properties:
+      addressId:
+        type: integer
+        format: int64
+  Session:
+    type: object
+    properties:
+      userId:
+        type: string
+        description: The unique identifier of the user.
+      sessionToken:
+        type: string
+        description: The assigned session token.
+      name:
+        description: Name of the user.
+        type: string
+      roles:
+        description: Roles attached to this user.
+        type: array
+        items:
+          type: string
+  Success:
+    type: object
+    properties:
+      success:
+        type: boolean
+  SuccessAdmin:
+    type: object
+    properties:
+      success:
+        type: boolean
+      uid:
+        type: string
+  Count:
+    type: object
+    properties:
+      count:
+        type: integer
+        format: int64
+  UserList:
+    type: object
+    properties:
+      users:
+        type: array
+        items:
+          $ref: '#/definitions/UserListItem'
+      size:
+        type: integer
+        format: int64
+  UserListItem:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      uid:
+        type: string
+      locked:
+        type: boolean
+      trust:
+        type: boolean
+      created:
+        type: string
+  User:
+    type: object
+    properties:
+      name:
+        example: Sample
+        type: string
+      email:
+        example: newdax@sample.com
+        type: string
+      uid:
+        description: Unique id, different than id of the database
+        example: 15645b30ac86e84e582c1366926e7033
+        type: string
+      lockDate:
+        example: "2017-05-02 08:44"
+        type: string
+      trust:
+        type: boolean
+      created:
+        example: "2017-05-02 08:44"
+        type: string
+      oldEmails:
+        type: array
+        items:
+          $ref: '#/definitions/OldEmail'
+  OldEmail:
+    type: object
+    description: Represnting email address that user already used in the past.
+    properties:
+      email:
+        example: olddax@sample.com
+        type: string
+      changed:
+        description: Timestamp when the user last time changes his email.
+        type: string
+        example: 2017-05-02 08:44
+  Profile:
+    type: object
+    properties:
+      name:
+        example: Sample
+        type: string
+      email:
+        example: newdax@sample.com
+        type: string
+  PaymentMethodId:
+    type: object
+    properties:
+      id:
+        example: invoice1
+        type: string
+  Error:
+    type: object
+    properties:
+      id:
+        description: The unique error code throughout the application
+        type: string
+      uuid:
+        description: Trace id got from the trace header of the request
+        type: string
+      message:
+        description: Description of the error
+        type: string

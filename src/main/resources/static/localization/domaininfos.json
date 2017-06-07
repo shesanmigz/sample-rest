@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Germany",
+    "link": "https://wwwt.sample.de",
+    "domainId": "sample.de",
+    "defaultCountry": {
+      "default": true,
+      "name": "Germany",
+      "iso2": "DE",
+      "iso3": "DEU",
+      "numericCode": 276
+    },
+    "currency": {
+      "name": "Euro",
+      "iso": "EUR",
+      "symbol": "€"
+    }
+  },
+  {
+    "name": "Switzerland",
+    "link": "https://wwwt.sample.ch",
+    "domainId": "sample.de",
+    "defaultCountry": {
+      "default": true,
+      "name": "Switzerland",
+      "iso2": "CH",
+      "iso3": "CHE",
+      "numericCode": 756
+    },
+    "currency": {
+      "name": "Swiss Franc",
+      "iso": "CHF",
+      "symbol": "CHF"
+    }
+  }
+]

@@ -1,0 +1,29 @@
+{
+    "title": "harry potter",
+    "subtitle": "more of that magic",
+    "categories": [
+        {
+            "handle": "aaaab",
+            "name": "books"
+        },
+        {
+            "handle": "aaabb",
+            "name": "fantasy-books"
+        }
+    ],
+    "media": [
+        {
+            "type": "image",
+            "url": "http://static34.sample.com/harry-potter.jpg",
+            "sizeX": 1920,
+            "sizeY": 1080
+        },
+        {
+            "type": "youtube-video",
+            "url": "http://youtube.com/harry-potter-video",
+            "sizeX": 1920,
+            "sizeY": 1080
+        }
+    ],
+    "hidden": false
+}

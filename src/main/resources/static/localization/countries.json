@@ -1,0 +1,23 @@
+[
+  {
+    "default": false,
+    "name": "Czechia",
+    "iso2": "CZ",
+    "iso3": "CZE",
+    "numericCode": 203
+  },
+  {
+    "default": true,
+    "name": "Germany",
+    "iso2": "DE",
+    "iso3": "DEU",
+    "numericCode": 276
+  },
+  {
+    "default": false,
+    "name": "Denmark",
+    "iso2": "DK",
+    "iso3": "DNK",
+    "numericCode": 208
+  }
+]
